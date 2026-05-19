@@ -3,26 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ANKA Engine — Experimental On-Chain System</title>
-  <meta name="description" content="ANKA Engine is a decentralized experimental token system on BNB Chain with time-based liquidity mechanics and immutable contract." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <title>ANKA Engine — BNB Chain</title>
+  <meta name="description" content="ANKA Engine — Experimental on-chain token system on BNB Chain. Immutable contract, renounced ownership, time-based liquidity mechanics." />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:           #070707;
-      --surface:      #0C0C0C;
-      --surface2:     #121212;
-      --border:       #1A1A1A;
-      --border2:      #252525;
-      --gold:         #C8961E;
-      --gold-bright:  #E5B84A;
-      --gold-dim:     rgba(200,150,30,0.12);
-      --text:         #EDE8DD;
-      --text-muted:   #6E6860;
-      --text-dim:     #2E2A26;
+      --gold:       #D4A017;
+      --gold-dark:  #B8870D;
+      --gold-light: #F5C842;
+      --gold-bg:    #FFFBEE;
+      --gold-border:#E8C96A;
+      --text:       #1A1410;
+      --muted:      #7A6E5A;
+      --dim:        #C4B898;
+      --border:     #EEE4C8;
+      --bg:         #FFFFFF;
+      --surface:    #FDFAF2;
     }
 
     html { scroll-behavior: smooth; }
@@ -30,1238 +27,626 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 300;
-      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
 
     /* ── NAV ─────────────────────────────── */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 22px 48px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: #fff;
+      border-bottom: 2px solid var(--gold);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: center;
+    }
+    .nav-inner {
+      width: 100%;
+      max-width: 820px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: border-color 0.4s, background 0.4s;
     }
-    nav.scrolled {
-      border-bottom: 1px solid var(--border);
-      background: rgba(7,7,7,0.94);
-      backdrop-filter: blur(14px);
-    }
-    .nav-logo {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--text);
-      text-decoration: none;
-    }
-    .nav-logo em { color: var(--gold); font-style: normal; }
-    .nav-right {
+    .nav-brand {
       display: flex;
       align-items: center;
-      gap: 32px;
-    }
-    .nav-right a {
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+      gap: 10px;
       text-decoration: none;
-      transition: color 0.25s;
     }
-    .nav-right a:hover { color: var(--text); }
-    .nav-badge {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.14em;
+    .nav-brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+    .nav-brand-name {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+    .nav-brand-name span { color: var(--gold); }
+    .nav-chain {
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--gold);
-      border: 1px solid rgba(200,150,30,0.35);
+      color: var(--gold-dark);
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-border);
       padding: 5px 12px;
+      border-radius: 100px;
+    }
+
+    /* ── CONTAINER ───────────────────────── */
+    .wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 24px;
     }
 
     /* ── HERO ────────────────────────────── */
     .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
       text-align: center;
-      overflow: hidden;
-      padding: 120px 48px 80px;
+      padding: 60px 24px 52px;
+      max-width: 820px;
+      margin: 0 auto;
     }
-
-    #ember-canvas {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .hero-ring {
-      position: absolute;
-      width: 560px;
-      height: 560px;
-      border: 1px solid rgba(200,150,30,0.05);
+    .hero-logo {
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      animation: spin 60s linear infinite;
-      pointer-events: none;
+      margin: 0 auto 20px;
+      display: block;
+      animation: pop 0.6s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .hero-ring-2 {
-      position: absolute;
-      width: 800px;
-      height: 800px;
-      border: 1px solid rgba(200,150,30,0.025);
-      border-radius: 50%;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      animation: spin 120s linear infinite reverse;
-      pointer-events: none;
+    .hero-title {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: clamp(44px, 10vw, 80px);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      color: var(--text);
+      animation: slideUp 0.6s ease both 0.1s;
     }
-
-    .hero-eyebrow {
-      position: relative;
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.38em;
+    .hero-title span { color: var(--gold); }
+    .hero-sub {
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 36px;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 0.3s;
-    }
-
-    .hero-anka {
-      position: relative;
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 300;
-      font-size: clamp(108px, 17vw, 236px);
-      line-height: 0.88;
-      letter-spacing: -0.015em;
-      display: flex;
-    }
-    .hero-anka .L {
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(28px);
-    }
-    .hero-anka .L:nth-child(1) { animation: rise 1s cubic-bezier(0.22,1,0.36,1) forwards 0.6s; }
-    .hero-anka .L:nth-child(2) { animation: rise 1s cubic-bezier(0.22,1,0.36,1) forwards 0.74s; }
-    .hero-anka .L:nth-child(3) { animation: rise 1s cubic-bezier(0.22,1,0.36,1) forwards 0.88s; }
-    .hero-anka .L:nth-child(4) { animation: rise 1s cubic-bezier(0.22,1,0.36,1) forwards 1.02s; }
-
-    .hero-engine {
-      position: relative;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 300;
-      font-size: clamp(10px, 1.4vw, 16px);
-      letter-spacing: 0.82em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+      color: var(--muted);
       margin-top: 10px;
-      padding-left: 0.82em;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 1.3s;
+      animation: slideUp 0.6s ease both 0.2s;
     }
 
-    .hero-line {
-      width: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      margin: 44px auto;
-      animation: expand 1s ease forwards 1.65s;
+    /* ── CA BOX ──────────────────────────── */
+    .ca-section {
+      background: var(--surface);
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 32px 28px;
+      margin: 36px auto 0;
+      max-width: 820px;
+      text-align: center;
+      animation: slideUp 0.6s ease both 0.3s;
+      box-shadow: 0 4px 32px rgba(212,160,23,0.12);
     }
-
-    .hero-tag {
-      position: relative;
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 300;
-      font-size: clamp(15px, 2.2vw, 22px);
-      color: var(--text-muted);
-      max-width: 500px;
-      line-height: 1.65;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 1.9s;
-    }
-
-    .hero-cta {
-      position: relative;
-      display: flex;
-      gap: 14px;
-      margin-top: 48px;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 2.1s;
-    }
-
-    .btn-gold {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.2em;
+    .ca-label {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.3em;
       text-transform: uppercase;
-      color: #080808;
+      color: var(--gold-dark);
+      margin-bottom: 14px;
+    }
+    .ca-box {
+      display: flex;
+      align-items: stretch;
+      border: 1.5px solid var(--gold-border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 16px;
+    }
+    .ca-addr {
+      flex: 1;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: clamp(10px, 2.2vw, 13.5px);
+      font-weight: bold;
+      color: var(--text);
+      padding: 14px 16px;
+      word-break: break-all;
+      text-align: left;
+      line-height: 1.4;
+      background: transparent;
+      border: none;
+      user-select: all;
+    }
+    .ca-copy-btn {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      color: #fff;
       background: var(--gold);
       border: none;
-      padding: 14px 28px;
+      padding: 14px 22px;
       cursor: pointer;
-      text-decoration: none;
-      transition: background 0.25s, transform 0.2s;
-    }
-    .btn-gold:hover { background: var(--gold-bright); transform: translateY(-2px); }
-
-    .btn-ghost {
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      background: transparent;
-      border: 1px solid var(--border2);
-      padding: 14px 28px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: border-color 0.25s, color 0.25s, transform 0.2s;
-    }
-    .btn-ghost:hover { border-color: rgba(200,150,30,0.5); color: var(--text); transform: translateY(-2px); }
-
-    .scroll-indicator {
-      position: absolute;
-      bottom: 36px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 2.6s;
-    }
-    .scroll-indicator span {
-      font-size: 8px;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
-    .scroll-bar {
-      width: 1px;
-      height: 44px;
-      background: linear-gradient(to bottom, var(--gold), transparent);
-      animation: pulse-bar 2.4s ease-in-out infinite 3.2s;
-    }
-
-    /* ── TICKER ──────────────────────────── */
-    .ticker {
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      overflow: hidden;
-      padding: 13px 0;
-    }
-    .ticker-track {
-      display: flex;
+      transition: background 0.2s;
       white-space: nowrap;
-      animation: ticker-scroll 32s linear infinite;
-    }
-    .ticker-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 32px;
-      padding: 0 32px;
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-    .ticker-item::after {
-      content: '';
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      background: var(--gold);
-      opacity: 0.6;
       flex-shrink: 0;
     }
-    .ticker-item .hi { color: var(--gold); font-weight: 500; }
+    .ca-copy-btn:hover { background: var(--gold-dark); }
+    .ca-copy-btn.ok { background: #4CAF50; }
+    .ca-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-gold {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.06em;
+      color: #fff;
+      background: var(--gold);
+      border: none;
+      padding: 13px 28px;
+      border-radius: 100px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.15s;
+      box-shadow: 0 2px 12px rgba(212,160,23,0.3);
+    }
+    .btn-gold:hover { background: var(--gold-dark); transform: translateY(-2px); }
+    .btn-outline {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.06em;
+      color: var(--gold-dark);
+      background: transparent;
+      border: 2px solid var(--gold);
+      padding: 11px 28px;
+      border-radius: 100px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-outline:hover { background: var(--gold-bg); transform: translateY(-2px); }
 
-    /* ── STATS STRIP ─────────────────────── */
-    .stats-wrap {
-      padding: 80px 48px;
-      max-width: 1280px;
+    /* ── DIVIDER ─────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1.5px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── STATS ───────────────────────────── */
+    .stats {
+      padding: 44px 24px;
+      max-width: 820px;
       margin: 0 auto;
     }
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
+      gap: 12px;
     }
-    .stat-cell {
-      background: var(--bg);
-      padding: 40px 32px;
-      transition: background 0.3s;
-      cursor: default;
+    .stat {
+      background: var(--gold-bg);
+      border: 1.5px solid var(--gold-border);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
     }
-    .stat-cell:hover { background: var(--surface); }
-    .stat-val {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 600;
-      font-size: clamp(40px, 5.5vw, 64px);
-      color: var(--gold);
+    .stat-num {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 36px;
+      color: var(--gold-dark);
       line-height: 1;
     }
-    .stat-unit { font-size: 18px; font-weight: 400; }
-    .stat-label {
-      display: block;
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-top: 14px;
-    }
-    .stat-note {
-      display: block;
+    .stat-lbl {
       font-size: 11px;
-      font-weight: 300;
-      color: var(--text-dim);
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
       margin-top: 6px;
-      line-height: 1.55;
     }
 
-    /* ── SHARED SECTION STYLES ───────────── */
+    /* ── SECTION ─────────────────────────── */
     .section {
-      padding: 100px 48px;
-      border-top: 1px solid var(--border);
-    }
-    .inner {
-      max-width: 1280px;
+      padding: 44px 24px;
+      max-width: 820px;
       margin: 0 auto;
     }
-    .eyebrow {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.32em;
-      text-transform: uppercase;
-      color: var(--gold);
+    .section-title {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: clamp(26px, 5vw, 38px);
+      letter-spacing: 0.04em;
+      color: var(--text);
       margin-bottom: 24px;
     }
-    .eyebrow::before {
-      content: '';
-      width: 22px;
-      height: 1px;
-      background: var(--gold);
-      flex-shrink: 0;
-    }
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 300;
-      font-size: clamp(32px, 5vw, 58px);
-      line-height: 1.15;
-      color: var(--text);
-    }
-
-    /* ── THESIS ──────────────────────────── */
-    .thesis-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 88px;
-      align-items: start;
-      margin-top: 56px;
-    }
-    .thesis-pull {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 300;
-      font-size: clamp(22px, 3.2vw, 40px);
-      line-height: 1.35;
-      color: var(--text);
-      border-left: 1px solid var(--gold);
-      padding-left: 28px;
-    }
-    .thesis-body {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      font-size: 13.5px;
-      line-height: 1.88;
-      color: var(--text-muted);
-    }
-    .thesis-body strong { color: var(--text); font-weight: 500; }
-
-    /* ── CONTRAST BLOCK ──────────────────── */
-    .contrast-block {
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .contrast-cols {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--border);
-    }
-    .contrast-col {
-      background: var(--surface);
-      padding: 60px 56px;
-    }
-    .contrast-heading {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      margin-bottom: 32px;
-    }
-    .contrast-col.old .contrast-heading { color: var(--text-muted); }
-    .contrast-col.new .contrast-heading { color: var(--gold); }
-    .contrast-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .contrast-list li {
-      font-size: 13.5px;
-      font-weight: 300;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .contrast-list li::before {
-      content: '';
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .contrast-col.old .contrast-list li { color: var(--text-muted); }
-    .contrast-col.old .contrast-list li::before { background: var(--text-dim); }
-    .contrast-col.new .contrast-list li { color: var(--text); }
-    .contrast-col.new .contrast-list li::before { background: var(--gold); }
+    .section-title span { color: var(--gold); }
 
     /* ── MECHANICS ───────────────────────── */
-    .mech-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--border);
-      margin-top: 56px;
+    .mechs {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
-    .mech-card {
-      background: var(--bg);
-      padding: 52px 40px;
-      position: relative;
-      overflow: hidden;
-      transition: background 0.3s;
+    .mech {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .mech-card::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--gold);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.45s cubic-bezier(0.22,1,0.36,1);
+    .mech:hover {
+      border-color: var(--gold-border);
+      box-shadow: 0 2px 16px rgba(212,160,23,0.1);
     }
-    .mech-card:hover { background: var(--surface); }
-    .mech-card:hover::after { transform: scaleX(1); }
-    .mech-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 600;
-      font-size: 80px;
-      color: var(--text-dim);
+    .mech-badge {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 22px;
+      color: var(--gold);
+      background: var(--gold-bg);
+      border: 1.5px solid var(--gold-border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      flex-shrink: 0;
+      min-width: 64px;
+      text-align: center;
       line-height: 1;
-      margin-bottom: 24px;
-      user-select: none;
     }
+    .mech-content {}
     .mech-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: 27px;
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.04em;
       color: var(--text);
-      margin-bottom: 14px;
+      margin-bottom: 4px;
     }
     .mech-desc {
       font-size: 13px;
-      line-height: 1.78;
-      color: var(--text-muted);
-    }
-    .mech-tag {
-      display: inline-block;
-      margin-top: 28px;
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--gold);
-      border: 1px solid rgba(200,150,30,0.28);
-      padding: 6px 14px;
+      color: var(--muted);
+      line-height: 1.6;
     }
 
-    /* ── TOKEN STRUCTURE ─────────────────── */
-    .token-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 88px;
-      margin-top: 56px;
+    /* ── TOKEN TABLE ─────────────────────── */
+    .token-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1.5px solid var(--border);
     }
-    .token-table { display: flex; flex-direction: column; }
-    .token-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 18px 0;
+    .token-table tr {
       border-bottom: 1px solid var(--border);
     }
-    .token-row:first-child { border-top: 1px solid var(--border); }
-    .t-label {
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+    .token-table tr:last-child { border-bottom: none; }
+    .token-table td {
+      padding: 14px 20px;
+      font-size: 13.5px;
     }
-    .t-val {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 600;
-      font-size: 21px;
+    .token-table td:first-child {
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: var(--muted);
+      width: 44%;
+    }
+    .token-table td:last-child {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.03em;
       color: var(--text);
       text-align: right;
     }
-    .t-val.gold { color: var(--gold); }
+    .token-table td.gold { color: var(--gold-dark); }
+    .token-table tr:nth-child(odd) td { background: var(--surface); }
+    .token-table tr:nth-child(even) td { background: #fff; }
 
-    .timeline {
+    /* ── GOV BADGES ──────────────────────── */
+    .gov-list {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .tl-item {
-      display: flex;
-      gap: 22px;
-    }
-    .tl-spine {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex-shrink: 0;
-    }
-    .tl-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--gold);
-      margin-top: 3px;
-    }
-    .tl-line {
-      width: 1px;
-      flex: 1;
-      background: var(--border);
-      min-height: 44px;
-    }
-    .tl-body { padding-bottom: 36px; }
-    .tl-title {
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text);
-      margin-bottom: 7px;
-    }
-    .tl-desc {
-      font-size: 12.5px;
-      font-weight: 300;
-      line-height: 1.7;
-      color: var(--text-muted);
-    }
-
-    /* ── CONTRACT ────────────────────────── */
-    .contract-section {
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-      text-align: center;
-      padding: 100px 48px;
-    }
-    .contract-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 300;
-      font-size: clamp(38px, 6vw, 72px);
-      line-height: 1.1;
-      color: var(--text);
-      margin-bottom: 14px;
-    }
-    .contract-sub {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 56px;
-    }
-    .ca-wrap {
-      display: inline-flex;
-      align-items: stretch;
-      border: 1px solid var(--border2);
-      overflow: hidden;
-      max-width: 100%;
-    }
-    .ca-addr {
-      font-family: 'Space Grotesk', monospace;
-      font-size: clamp(9px, 1.4vw, 13px);
-      font-weight: 400;
-      letter-spacing: 0.06em;
-      color: var(--text);
-      padding: 16px 22px;
-      background: var(--bg);
-      word-break: break-all;
-    }
-    .ca-copy {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--gold);
-      background: rgba(200,150,30,0.07);
-      border: none;
-      border-left: 1px solid var(--border2);
-      padding: 16px 20px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.25s;
-      font-family: 'Space Grotesk', sans-serif;
-    }
-    .ca-copy:hover { background: rgba(200,150,30,0.14); }
-    .ca-copy.done { color: #5CB85C; }
-
-    .contract-links {
-      display: flex;
-      justify-content: center;
-      gap: 28px;
-      margin-top: 32px;
-    }
-    .contract-links a {
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      text-decoration: none;
+    .gov-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: color 0.25s;
-    }
-    .contract-links a:hover { color: var(--gold); }
-
-    /* ── GOVERNANCE ──────────────────────── */
-    .gov-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--border);
-      margin-top: 56px;
-    }
-    .gov-card {
-      background: var(--bg);
-      padding: 40px 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      transition: background 0.3s;
-    }
-    .gov-card:hover { background: var(--surface); }
-    .gov-icon {
-      width: 30px;
-      height: 30px;
-      border: 1px solid rgba(200,150,30,0.35);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .gov-name {
-      font-size: 12.5px;
-      font-weight: 500;
-      color: var(--text);
-    }
-    .gov-desc {
+      gap: 7px;
       font-size: 12px;
-      font-weight: 300;
-      line-height: 1.65;
-      color: var(--text-muted);
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      background: var(--gold-bg);
+      border: 1.5px solid var(--gold-border);
+      padding: 8px 16px;
+      border-radius: 100px;
+    }
+    .gov-badge::before {
+      content: '✓';
+      font-weight: 900;
     }
 
     /* ── RISK ────────────────────────────── */
-    .risk-section {
-      border-top: 1px solid var(--border);
-      padding: 80px 48px;
+    .risk-box {
       background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 24px;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.75;
     }
-    .risk-inner {
-      max-width: 680px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .risk-eyebrow {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.32em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 22px;
-    }
-    .risk-text {
-      font-size: 13px;
-      font-weight: 300;
-      line-height: 1.9;
-      color: var(--text-dim);
-    }
-    .risk-text strong { color: var(--text-muted); font-weight: 400; }
+    .risk-box strong { color: var(--text); }
 
     /* ── FOOTER ──────────────────────────── */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 48px;
+      background: var(--gold-bg);
+      border-top: 2px solid var(--gold);
+      padding: 28px 24px;
+      text-align: center;
     }
     .footer-inner {
-      max-width: 1280px;
+      max-width: 820px;
       margin: 0 auto;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 10px;
     }
-    .footer-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 300;
-      font-size: 30px;
-      color: var(--text-muted);
-    }
-    .footer-logo span { color: var(--gold); }
-    .footer-note {
-      font-size: 11px;
-      font-weight: 300;
-      color: var(--text-dim);
-      text-align: center;
-      line-height: 1.7;
-    }
-    .footer-chain {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+    .footer-brand {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
-    .bnb-pip {
-      width: 8px;
-      height: 8px;
+    .footer-brand img {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: #F3BA2F;
+    }
+    .footer-brand-name {
+      font-family: Impact, 'Arial Narrow', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.06em;
+      color: var(--text);
+    }
+    .footer-brand-name span { color: var(--gold); }
+    .footer-note {
+      font-size: 11.5px;
+      color: var(--muted);
     }
 
     /* ── ANIMATIONS ──────────────────────── */
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(28px); }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes expand {
-      from { width: 0; }
-      to   { width: 140px; }
-    }
-    @keyframes spin {
-      to { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-    @keyframes ticker-scroll {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
-    @keyframes pulse-bar {
-      0%, 100% { opacity: 0.25; }
-      50%       { opacity: 0.9; }
     }
 
     /* scroll reveal */
     .r {
       opacity: 0;
-      transform: translateY(22px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      transform: translateY(16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
-    .r.d1 { transition-delay: 0.1s; }
-    .r.d2 { transition-delay: 0.2s; }
-    .r.d3 { transition-delay: 0.3s; }
-    .r.d4 { transition-delay: 0.4s; }
+    .r.d1 { transition-delay: 0.08s; }
+    .r.d2 { transition-delay: 0.16s; }
+    .r.d3 { transition-delay: 0.24s; }
     .r.on { opacity: 1; transform: translateY(0); }
 
     /* ── RESPONSIVE ──────────────────────── */
-    @media (max-width: 1024px) {
+    @media (max-width: 640px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .thesis-grid { grid-template-columns: 1fr; gap: 48px; }
-      .token-grid  { grid-template-columns: 1fr; gap: 56px; }
-      .gov-grid    { grid-template-columns: repeat(2, 1fr); }
+      .ca-addr { font-size: 10px; }
+      .hero-title { font-size: 52px; }
     }
-    @media (max-width: 768px) {
-      nav { padding: 18px 24px; }
-      .nav-right a:not(.nav-badge) { display: none; }
-      .section { padding: 72px 24px; }
-      .stats-wrap { padding: 56px 24px; }
-      .contract-section { padding: 72px 24px; }
-      .risk-section { padding: 64px 24px; }
-      footer { padding: 32px 24px; }
-      .contrast-col { padding: 44px 32px; }
-      .mech-grid { grid-template-columns: 1fr; }
-      .contrast-cols { grid-template-columns: 1fr; }
-      .footer-inner { flex-direction: column; text-align: center; }
-    }
-    @media (max-width: 540px) {
-      nav { padding: 16px 20px; }
-      .hero { padding: 100px 20px 64px; }
-      .section { padding: 60px 20px; }
-      .stats-wrap { padding: 40px 20px; }
+    @media (max-width: 400px) {
       .stats-grid { grid-template-columns: 1fr 1fr; }
-      .gov-grid { grid-template-columns: 1fr; }
-      .hero-cta { flex-direction: column; align-items: stretch; }
-      .btn-gold, .btn-ghost { text-align: center; }
-      .ca-wrap { flex-direction: column; }
-      .ca-copy { border-left: none; border-top: 1px solid var(--border2); }
-      .hero-ring, .hero-ring-2 { display: none; }
+      .ca-box { flex-direction: column; }
+      .ca-copy-btn { padding: 12px; }
     }
   </style>
 </head>
 <body>
 
 <!-- ── NAV ───────────────────────────────────────────── -->
-<nav id="main-nav">
-  <a class="nav-logo" href="#">ANKA <em>·</em> ENGINE</a>
-  <div class="nav-right">
-    <a href="#mechanics">Mechanics</a>
-    <a href="#contract">Contract</a>
-    <span class="nav-badge">BNB Chain</span>
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#">
+      <img src="logo.jpg" alt="ANKA Engine Logo" />
+      <span class="nav-brand-name">ANKA <span>ENGINE</span></span>
+    </a>
+    <span class="nav-chain">BNB Chain</span>
   </div>
 </nav>
 
 <!-- ── HERO ──────────────────────────────────────────── -->
 <div class="hero">
-  <canvas id="ember-canvas"></canvas>
-  <div class="hero-ring"></div>
-  <div class="hero-ring-2"></div>
-
-  <p class="hero-eyebrow">Experimental &nbsp;·&nbsp; On-Chain &nbsp;·&nbsp; Immutable</p>
-
-  <div style="position:relative;">
-    <div class="hero-anka" aria-label="ANKA">
-      <span class="L">A</span><span class="L">N</span><span class="L">K</span><span class="L">A</span>
-    </div>
-    <p class="hero-engine">Engine</p>
-  </div>
-
-  <div class="hero-line"></div>
-
-  <p class="hero-tag">A Liquidity-Constrained Experimental Token System&nbsp;on BNB Chain</p>
-
-  <div class="hero-cta">
-    <a class="btn-gold" href="#contract">View Contract</a>
-    <a class="btn-ghost" href="#mechanics">Explore Mechanics</a>
-  </div>
-
-  <div class="scroll-indicator">
-    <div class="scroll-bar"></div>
-    <span>Scroll</span>
-  </div>
+  <img class="hero-logo" src="logo.jpg" alt="ANKA Engine" />
+  <h1 class="hero-title">ANKA <span>ENGINE</span></h1>
+  <p class="hero-sub">Experimental On-Chain System &nbsp;·&nbsp; BNB Chain</p>
 </div>
 
-<!-- ── TICKER ─────────────────────────────────────────── -->
-<div class="ticker">
-  <div class="ticker-track" id="ticker-track"></div>
-</div>
-
-<!-- ── STATS ──────────────────────────────────────────── -->
-<div class="stats-wrap">
-  <div class="stats-grid">
-    <div class="stat-cell r">
-      <div class="stat-val"><span class="cnt" data-to="99">0</span><span class="stat-unit">%</span></div>
-      <span class="stat-label">Burned at Launch</span>
-      <span class="stat-note">99 billion ANKA permanently removed at deployment</span>
+<!-- ── CA SECTION ────────────────────────────────────── -->
+<div class="wrap">
+  <div class="ca-section">
+    <p class="ca-label">Contract Address</p>
+    <div class="ca-box">
+      <span class="ca-addr" id="ca-text">0xB04C6033EEB23A2BcD613403D343e37960940e07</span>
+      <button class="ca-copy-btn" id="ca-btn" onclick="copyCA()">COPY</button>
     </div>
-    <div class="stat-cell r d1">
-      <div class="stat-val"><span class="cnt" data-to="1">0</span><span class="stat-unit">%</span></div>
-      <span class="stat-label">Burn per Transaction</span>
-      <span class="stat-note">Every transaction permanently compresses supply</span>
-    </div>
-    <div class="stat-cell r d2">
-      <div class="stat-val"><span class="cnt" data-to="2">0</span><span class="stat-unit">%</span></div>
-      <span class="stat-label">Protocol Fee</span>
-      <span class="stat-note">Transparent on-chain split — operations + charity</span>
-    </div>
-    <div class="stat-cell r d3">
-      <div class="stat-val"><span class="cnt" data-to="10">0</span><span class="stat-unit">M</span></div>
-      <span class="stat-label">Burn Cap</span>
-      <span class="stat-note">Supply hardens permanently at this threshold</span>
-    </div>
-  </div>
-</div>
-
-<!-- ── THESIS ─────────────────────────────────────────── -->
-<section class="section" id="about">
-  <div class="inner">
-    <p class="eyebrow r">The Thesis</p>
-    <div class="thesis-grid">
-      <blockquote class="thesis-pull r">
-        "What happens when exit is not instant — but structured over time?"
-      </blockquote>
-      <div class="thesis-body r d1">
-        <p>Most tokens share a common structure: instant buying, instant selling, and high speculation cycles driven by short-term volatility.</p>
-        <p>ANKA Engine explores a fundamentally different question. <strong>What if liquidity is earned through time rather than granted freely?</strong></p>
-        <p>By removing instant exit, restructuring supply dynamics, and eliminating all administrative control, ANKA Engine creates a market governed purely by on-chain logic — not human intervention.</p>
-        <p>There is no admin. No upgrade path. No hidden mechanism. The contract is deployed, renounced, and permanent.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CONTRAST ───────────────────────────────────────── -->
-<div class="contrast-block">
-  <div class="contrast-cols">
-    <div class="contrast-col old r">
-      <p class="contrast-heading">Traditional Token Model</p>
-      <ul class="contrast-list">
-        <li>Instant buying &amp; selling</li>
-        <li>Unlimited exit at any time</li>
-        <li>High speculation cycles</li>
-        <li>Short-term volatility driven</li>
-        <li>Admin-controlled contracts</li>
-      </ul>
-    </div>
-    <div class="contrast-col new r d2">
-      <p class="contrast-heading">ANKA Engine Model</p>
-      <ul class="contrast-list">
-        <li>Entry always open</li>
-        <li>Exit rate-limited by smart contract</li>
-        <li>Supply continuously decreasing</li>
-        <li>Time-structured market dynamics</li>
-        <li>Fully immutable — zero admin control</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
-<!-- ── MECHANICS ──────────────────────────────────────── -->
-<section class="section" id="mechanics">
-  <div class="inner">
-    <p class="eyebrow r">Core Mechanics</p>
-    <h2 class="section-title r">Three-Layer Transaction System</h2>
-
-    <div class="mech-grid">
-      <div class="mech-card r">
-        <div class="mech-num">01</div>
-        <h3 class="mech-title">Burn Mechanism</h3>
-        <p class="mech-desc">1% of every transaction is permanently destroyed. Supply decreases with every on-chain interaction until the hard 10,000,000 ANKA cap is reached — at which point the mechanism halts automatically and is locked forever.</p>
-        <span class="mech-tag">1% per TX</span>
-      </div>
-      <div class="mech-card r d1">
-        <div class="mech-num">02</div>
-        <h3 class="mech-title">Protocol Fee</h3>
-        <p class="mech-desc">A 2% fee is collected per transaction and converted to BNB. Distribution is hard-coded and fully transparent: 66% funds operations via the creator wallet, 34% routes to a designated charity wallet. No hidden allocations.</p>
-        <span class="mech-tag">2% fee</span>
-      </div>
-      <div class="mech-card r d2">
-        <div class="mech-num">03</div>
-        <h3 class="mech-title">Time-Based Exit</h3>
-        <p class="mech-desc">Unlike standard tokens, ANKA does not permit unrestricted instant selling. Wallet-based daily sell limits are enforced by immutable contract logic. Exit is gradual rather than instantaneous — structurally, by design.</p>
-        <span class="mech-tag">Rate-limited</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── TOKEN STRUCTURE ────────────────────────────────── -->
-<section class="section" id="token">
-  <div class="inner">
-    <p class="eyebrow r">Token Architecture</p>
-    <h2 class="section-title r">Supply Design</h2>
-
-    <div class="token-grid">
-      <div class="token-table r">
-        <div class="token-row">
-          <span class="t-label">Total Supply</span>
-          <span class="t-val">100,000,000,000</span>
-        </div>
-        <div class="token-row">
-          <span class="t-label">Burned at Launch</span>
-          <span class="t-val gold">99,000,000,000</span>
-        </div>
-        <div class="token-row">
-          <span class="t-label">Circulating Supply</span>
-          <span class="t-val">~1,000,000,000</span>
-        </div>
-        <div class="token-row">
-          <span class="t-label">Burn Cap</span>
-          <span class="t-val gold">10,000,000</span>
-        </div>
-        <div class="token-row">
-          <span class="t-label">Network</span>
-          <span class="t-val">BNB Chain</span>
-        </div>
-        <div class="token-row">
-          <span class="t-label">Ownership</span>
-          <span class="t-val gold">Renounced</span>
-        </div>
-      </div>
-
-      <div class="timeline r d2">
-        <div class="tl-item">
-          <div class="tl-spine"><div class="tl-dot"></div><div class="tl-line"></div></div>
-          <div class="tl-body">
-            <p class="tl-title">Launch</p>
-            <p class="tl-desc">99% of total supply burned immediately. Ownership renounced. Liquidity locked permanently. No further developer intervention possible.</p>
-          </div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-spine"><div class="tl-dot"></div><div class="tl-line"></div></div>
-          <div class="tl-body">
-            <p class="tl-title">Active Phase</p>
-            <p class="tl-desc">Each transaction triggers the 3-layer mechanism. 1% burned. 2% to protocol. Time-based exit constraints active on all wallets.</p>
-          </div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-spine"><div class="tl-dot"></div></div>
-          <div class="tl-body">
-            <p class="tl-title">Supply Hardening</p>
-            <p class="tl-desc">When circulating supply reaches 10,000,000 ANKA, the burn mechanism stops automatically. Supply becomes immutably fixed. Forever.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CONTRACT ───────────────────────────────────────── -->
-<section class="contract-section" id="contract">
-  <div class="inner" style="text-align:center;">
-    <p class="eyebrow r" style="justify-content:center;">Fully On-Chain</p>
-    <h2 class="contract-title r">Immutable.<br>Renounced.<br>Transparent.</h2>
-    <p class="contract-sub r">Contract Address — BNB Smart Chain</p>
-
-    <div class="r" style="display:flex;justify-content:center;">
-      <div class="ca-wrap">
-        <span class="ca-addr" id="ca-addr">0xB04C6033EEB23A2BcD613403D343e37960940e07</span>
-        <button class="ca-copy" id="ca-btn" onclick="copyCA()">Copy</button>
-      </div>
-    </div>
-
-    <div class="contract-links r">
-      <a href="https://bscscan.com/token/0xB04C6033EEB23A2BcD613403D343e37960940e07" target="_blank" rel="noopener">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    <div class="ca-buttons">
+      <a class="btn-gold" href="https://pancakeswap.finance/swap?outputCurrency=0xB04C6033EEB23A2BcD613403D343e37960940e07" target="_blank" rel="noopener">
+        Buy on PancakeSwap
+      </a>
+      <a class="btn-outline" href="https://bscscan.com/token/0xB04C6033EEB23A2BcD613403D343e37960940e07" target="_blank" rel="noopener">
         View on BSCScan
       </a>
-      <a href="https://x.com/ankaengine" target="_blank" rel="noopener">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
-        Follow on X
-      </a>
     </div>
   </div>
-</section>
+</div>
+
+<hr class="divider" style="margin-top:40px;" />
+
+<!-- ── STATS ──────────────────────────────────────────── -->
+<div class="stats">
+  <div class="stats-grid">
+    <div class="stat r">
+      <div class="stat-num">99%</div>
+      <div class="stat-lbl">Burned at Launch</div>
+    </div>
+    <div class="stat r d1">
+      <div class="stat-num">1%</div>
+      <div class="stat-lbl">Burn / TX</div>
+    </div>
+    <div class="stat r d2">
+      <div class="stat-num">2%</div>
+      <div class="stat-lbl">Protocol Fee</div>
+    </div>
+    <div class="stat r d3">
+      <div class="stat-num">10M</div>
+      <div class="stat-lbl">Burn Cap</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- ── HOW IT WORKS ───────────────────────────────────── -->
+<div class="section">
+  <h2 class="section-title r">How It <span>Works</span></h2>
+  <div class="mechs">
+    <div class="mech r">
+      <div class="mech-badge">1%</div>
+      <div class="mech-content">
+        <p class="mech-title">Burn Mechanism</p>
+        <p class="mech-desc">Every transaction permanently destroys 1% of the amount. Supply shrinks continuously until the 10,000,000 ANKA cap is hit — then burn stops automatically and supply is fixed forever.</p>
+      </div>
+    </div>
+    <div class="mech r d1">
+      <div class="mech-badge">2%</div>
+      <div class="mech-content">
+        <p class="mech-title">Protocol Fee</p>
+        <p class="mech-desc">2% per transaction is converted to BNB on-chain. Split is hard-coded: 66% to creator wallet (operations), 34% to charity wallet. Fully transparent — no hidden allocations.</p>
+      </div>
+    </div>
+    <div class="mech r d2">
+      <div class="mech-badge">⏱</div>
+      <div class="mech-content">
+        <p class="mech-title">Time-Based Exit</p>
+        <p class="mech-desc">Selling is rate-limited by smart contract logic. Wallet-based daily sell limits prevent instant mass exits. Exit is gradual and structured — by immutable design.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- ── TOKEN STRUCTURE ────────────────────────────────── -->
+<div class="section">
+  <h2 class="section-title r">Token <span>Structure</span></h2>
+  <table class="token-table r">
+    <tr>
+      <td>Total Supply</td>
+      <td>100,000,000,000</td>
+    </tr>
+    <tr>
+      <td>Burned at Launch</td>
+      <td class="gold">99,000,000,000</td>
+    </tr>
+    <tr>
+      <td>Circulating Supply</td>
+      <td>~1,000,000,000</td>
+    </tr>
+    <tr>
+      <td>Burn Cap</td>
+      <td class="gold">10,000,000</td>
+    </tr>
+    <tr>
+      <td>Network</td>
+      <td>BNB Chain</td>
+    </tr>
+    <tr>
+      <td>Ownership</td>
+      <td class="gold">Renounced</td>
+    </tr>
+  </table>
+</div>
+
+<hr class="divider" />
 
 <!-- ── GOVERNANCE ─────────────────────────────────────── -->
-<section class="section" id="governance">
-  <div class="inner">
-    <p class="eyebrow r">Governance</p>
-    <h2 class="section-title r">Zero Administrative Control</h2>
-
-    <div class="gov-grid">
-      <div class="gov-card r">
-        <div class="gov-icon">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C8961E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <p class="gov-name">Ownership Renounced</p>
-        <p class="gov-desc">No entity holds ownership of the contract. Control is permanently and irrevocably relinquished.</p>
-      </div>
-      <div class="gov-card r d1">
-        <div class="gov-icon">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C8961E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <p class="gov-name">No Admin Keys</p>
-        <p class="gov-desc">No private keys, multisigs, or timelocks exist that could modify system behavior.</p>
-      </div>
-      <div class="gov-card r d2">
-        <div class="gov-icon">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C8961E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <p class="gov-name">No Upgrade Functions</p>
-        <p class="gov-desc">Contract logic is final. No proxy pattern, no migration path, no version upgrade mechanism.</p>
-      </div>
-      <div class="gov-card r d3">
-        <div class="gov-icon">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C8961E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <p class="gov-name">No Blacklist</p>
-        <p class="gov-desc">No address can be restricted or excluded from participating in the system.</p>
-      </div>
-    </div>
+<div class="section">
+  <h2 class="section-title r">Zero <span>Admin Control</span></h2>
+  <div class="gov-list r">
+    <span class="gov-badge">Ownership Renounced</span>
+    <span class="gov-badge">No Admin Keys</span>
+    <span class="gov-badge">No Upgrade Functions</span>
+    <span class="gov-badge">No Blacklist</span>
+    <span class="gov-badge">Immutable Contract</span>
+    <span class="gov-badge">Liquidity Locked</span>
   </div>
-</section>
+</div>
+
+<hr class="divider" />
 
 <!-- ── RISK ───────────────────────────────────────────── -->
-<section class="risk-section">
-  <div class="inner">
-    <div class="risk-inner">
-      <p class="risk-eyebrow">Risk Disclosure</p>
-      <p class="risk-text r">
-        ANKA Engine is an <strong>experimental blockchain system</strong> and is not a financial product. Users should be aware of time-based exit constraints, market volatility due to low circulating supply, and the experimental nature of the system.
-        <br/><br/>
-        ANKA Engine is not designed to promise returns. It is designed to explore <strong>how markets behave under structural constraints</strong> rather than free liquidity conditions. Participation is entirely at user discretion.
-      </p>
-    </div>
+<div class="section">
+  <h2 class="section-title r">Risk <span>Disclosure</span></h2>
+  <div class="risk-box r">
+    ANKA Engine is an <strong>experimental blockchain system and is not a financial product.</strong> Users should be aware of time-based exit constraints, market volatility due to low circulating supply, and the experimental nature of the system. ANKA Engine is not designed to promise returns — it is designed to explore <strong>how markets behave under structural constraints</strong> rather than free liquidity conditions. Participation is entirely at user discretion.
   </div>
-</section>
+</div>
 
 <!-- ── FOOTER ─────────────────────────────────────────── -->
 <footer>
   <div class="footer-inner">
-    <span class="footer-logo"><span>Anka</span> Engine</span>
-    <p class="footer-note">
-      Experimental on-chain system. Not a financial product.<br/>
-      All mechanics verifiable on BNB Smart Chain.
-    </p>
-    <div class="footer-chain">
-      <div class="bnb-pip"></div>
-      BNB Smart Chain
+    <div class="footer-brand">
+      <img src="logo.jpg" alt="ANKA Engine" />
+      <span class="footer-brand-name">ANKA <span>ENGINE</span></span>
     </div>
+    <p class="footer-note">Experimental on-chain system · Not a financial product · BNB Smart Chain</p>
   </div>
 </footer>
 
 <script>
-  // NAV
-  const nav = document.getElementById('main-nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 50);
-  }, { passive: true });
-
-  // TICKER
-  const items = [
-    '<span class="hi">99%</span> Supply Burned at Launch',
-    'Immutable Contract',
-    'Renounced Ownership',
-    'Time-Based Liquidity Mechanics',
-    '<span class="hi">1%</span> Burn per Transaction',
-    '<span class="hi">2%</span> Protocol Fee',
-    '<span class="hi">10M</span> Token Burn Cap',
-    'BNB Smart Chain',
-    'No Admin Control',
-    'Liquidity Locked Permanently',
-  ];
-  const html = items.map(t => `<span class="ticker-item">${t}</span>`).join('');
-  const track = document.getElementById('ticker-track');
-  track.innerHTML = html + html;
-
-  // EMBER PARTICLES
-  const canvas = document.getElementById('ember-canvas');
-  const ctx = canvas.getContext('2d');
-
-  function resize() {
-    canvas.width  = canvas.parentElement.offsetWidth;
-    canvas.height = canvas.parentElement.offsetHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize, { passive: true });
-
-  function mkParticle() {
-    return {
-      x:  Math.random() * canvas.width,
-      y:  canvas.height + 10,
-      r:  Math.random() * 1.6 + 0.4,
-      vy: Math.random() * 0.7 + 0.25,
-      vx: (Math.random() - 0.5) * 0.35,
-      a:  Math.random() * 0.45 + 0.08,
-      life: 1,
-      decay: Math.random() * 0.0018 + 0.0008,
-    };
-  }
-
-  const particles = Array.from({ length: 55 }, () => {
-    const p = mkParticle();
-    p.y = Math.random() * canvas.height;
-    return p;
-  });
-
-  (function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach((p, i) => {
-      p.y    -= p.vy;
-      p.x    += p.vx;
-      p.life -= p.decay;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(200,150,30,${p.a * p.life})`;
-      ctx.fill();
-      if (p.life <= 0 || p.y < -8) particles[i] = mkParticle();
-    });
-    requestAnimationFrame(draw);
-  })();
-
-  // SCROLL REVEAL
-  const revealEls = document.querySelectorAll('.r');
-  const revealObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('on'); revealObs.unobserve(e.target); }
-    });
-  }, { threshold: 0.1 });
-  revealEls.forEach(el => revealObs.observe(el));
-
-  // COUNT-UP
-  const counters = document.querySelectorAll('.cnt');
-  const cntObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      const el  = e.target;
-      const end = parseInt(el.dataset.to);
-      let cur = 0;
-      const step = end / 36;
-      const iv = setInterval(() => {
-        cur += step;
-        if (cur >= end) { cur = end; clearInterval(iv); }
-        el.textContent = Math.floor(cur);
-      }, 28);
-      cntObs.unobserve(el);
-    });
-  }, { threshold: 0.5 });
-  counters.forEach(c => cntObs.observe(c));
-
   // COPY CA
   function copyCA() {
-    const addr = document.getElementById('ca-addr').textContent.trim();
+    const addr = document.getElementById('ca-text').textContent.trim();
     const btn  = document.getElementById('ca-btn');
     navigator.clipboard.writeText(addr).then(() => {
-      btn.textContent = 'Copied';
-      btn.classList.add('done');
-      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 2000);
+      btn.textContent = 'COPIED!';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('ok'); }, 2000);
     });
   }
+
+  // SCROLL REVEAL
+  const els = document.querySelectorAll('.r');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  els.forEach(el => obs.observe(el));
 </script>
 </body>
 </html>
